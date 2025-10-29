@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Links</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-[500px]">
+    <h2 class="text-2xl font-bold text-center text-indigo-700 mb-6">Edit My Links</h2>
+    <form method="POST" action="/edit_links" class="flex flex-col gap-4">
+      <textarea name="links" rows="10" class="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-400">{{ links_text }}</textarea>
+      <button type="submit" class="bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">Save Changes</button>
+    </form>
+    <div class="text-center mt-4">
+      <a href="/" class="text-indigo-600 font-semibold hover:underline">Back to Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

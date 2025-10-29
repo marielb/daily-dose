@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-100 to-blue-100 min-h-screen p-8">
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-indigo-700">Welcome, {{ user.name }} 👋</h2>
+      <a href="/logout" class="text-sm text-red-500 font-semibold hover:underline">Logout</a>
+    </div>
+
+    <!-- Rotation Settings -->
+    <section class="mb-10">
+      <h3 class="text-xl font-semibold text-gray-700 mb-3">Rotation Settings</h3>
+      <form method="POST" action="/update_rotation" class="flex items-center gap-4">
+        <label for="rotation_length" class="font-medium text-gray-600">Rotation Length (weeks):</label>
+        <select name="rotation_length" id="rotation_length"
+          class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400">
+          {% for week in range(2,9) %}
+          <option value="{{ week }}" {% if week == user.rotation_length %}selected{% endif %}>{{ week }} weeks</option>
+          {% endfor %}
+        </select>
+        <button type="submit"
+          class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">Save</button>
+      </form>
+    </section>
+
+    {% if not links %}
+    <!-- My Links -->
+    <section class="mb-10">
+      <h3 class="text-xl font-semibold text-gray-700 mb-3">My Links</h3>
+      <p class="text-sm text-gray-500 mb-3">
+        Paste one link per line. Week 1 = Tuesday–Friday (4 links), Weeks 2+ = Monday–Friday (5 links per week).
+      </p>
+      <form method="POST" action="/add_links" class="flex flex-col gap-3">
+        <textarea name="links" rows="10"
+          class="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-400"
+          placeholder="Enter your daily links here, one per line..."></textarea>
+        <button type="submit"
+          class="bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition w-40 self-end">Save Links</button>
+      </form>
+    </section>
+    {% endif %}
+
+{% if links %}
+<div class="mt-5 bg-indigo-50 border border-indigo-200 p-4 rounded-lg">
+  <h4 class="font-semibold text-indigo-700 mb-2">You’ve added {{ links|length }} links:</h4>
+  <ul class="list-disc pl-6 text-gray-700 space-y-1">
+    {% for l in links %}
+    <li>Week {{ l.week }} – Day {{ l.day }}:
+      <a href="{{ l.link }}" class="text-indigo-600 hover:underline">{{ l.link }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="mt-3">
+  <a href="/edit_links" class="text-indigo-600 font-semibold hover:underline">Edit Links</a>
+</div>
+{% endif %}
+    </section>
+
+    <!-- My Students -->
+    <section class="mt-12"></section>
+      <h3 class="text-xl font-semibold text-gray-700 mb-3">My Students</h3>
+      <form method="POST" action="/add_student" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
+      <label class="flex flex-col font-medium text-gray-600">
+        Student Name
+        <input name="name" placeholder="Dr. House"
+        class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400" required>
+      </label>
+      <label class="flex flex-col font-medium text-gray-600">
+        Student Phone Number
+        <input name="phone" placeholder="+16175555555"
+        class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400" required>
+      </label>
+      <label class="flex flex-col font-medium text-gray-600">
+        Student Start Date
+        <input name="start_date" type="date"
+        class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400" required>
+      </label>
+      <button type="submit"
+        class="bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">Add Student</button>
+      </form>
+
+      {% if students %}
+     <div class="space-y-3">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-4">
+            {% for category, message in messages %}
+              <div class="p-2 rounded text-sm {% if category == 'error' %}bg-red-100 text-red-700{% elif category == 'success' %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+  {% for s in students %}
+  <div class="border border-gray-200 rounded-lg p-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition">
+    <div>
+      <p class="font-semibold text-gray-700">{{ s.name }}</p>
+      <p class="text-sm text-gray-500">
+        {{ s.phone }} • Started {{ s.start_date.strftime('%b %d, %Y') }}
+        • Currently on Week {{ s.current_week }}, Day {{ s.current_day }}
+      </p>
+    </div>
+    <div class="flex gap-3 items-center">
+      <a href="/edit_student/{{ s.id }}" class="text-indigo-600 hover:underline text-sm">Edit</a>
+      <a href="/delete_student/{{ s.id }}" class="text-red-500 hover:underline text-sm">Remove</a>
+      <form method="POST" action="/resend_email/{{ s.id }}">
+        <button type="submit" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded hover:bg-indigo-200 text-xs font-semibold transition">
+          Resend Today’s Text
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if students %}
+<form method="POST" action="/clear_students" class="mt-4">
+  <button class="text-sm text-red-600 hover:underline">Archive All Students</button>
+</form>
+{% endif %}
+
+      {% else %}
+      <p class="text-gray-500">No students added yet.</p>
+      {% endif %}
+    </section>
+  </div>
+</body>
+</html>
+
+

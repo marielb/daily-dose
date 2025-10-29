@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Student</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-[500px]">
+    <h2 class="text-2xl font-bold text-center text-indigo-700 mb-6">Edit Student</h2>
+    <form method="POST" class="flex flex-col gap-4">
+      <input name="name" value="{{ student.name }}" placeholder="Student Name"
+        class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400" required>
+      <input name="phone" value="{{ student.phone }}" placeholder="Phone Number"
+        class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400" required>
+      <label class="flex flex-col gap-1">
+        <span class="text-gray-700 font-medium">Start Date</span>
+        <input name="start_date" type="date" value="{{ student.start_date }}"
+          class="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-400" required>
+      </label>
+      <button type="submit" class="bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition">Save Changes</button>
+    </form>
+    <div class="text-center mt-4">
+      <a href="/" class="text-indigo-600 font-semibold hover:underline">Back to Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>
